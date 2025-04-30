@@ -2,13 +2,13 @@ package com.lecturium.lecturiumservices.services;
 
 import com.lecturium.lecturiumservices.config.EncryptionConfig;
 import org.springframework.stereotype.Service;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
-import java.util.Base64;
 
 @Service
 public class EncryptionService {
@@ -68,6 +68,6 @@ public class EncryptionService {
         // 3. Decrypt data
         return cipher.doFinal(cipherText);
     }
-    
+
 
 }

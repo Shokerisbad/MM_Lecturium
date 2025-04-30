@@ -1,6 +1,5 @@
 package com.lecturium.lecturiumservices.services;
 
-import ch.qos.logback.classic.encoder.JsonEncoder;
 import com.lecturium.lecturiumservices.models.*;
 import com.lecturium.lecturiumservices.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
