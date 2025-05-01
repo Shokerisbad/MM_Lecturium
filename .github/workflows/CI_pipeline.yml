@@ -1,0 +1,57 @@
+---
+name: CI-Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  super-lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v4
+        env:
+          DEFAULT_BRANCH: main
+          JAVA_FILE_NAME: checkstyle.xml
+          JSCPD_CONFIG_FILE: jscpd-linter.jscpd.json
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          DISABLE_ERRORS: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+  push-image:
+    name: Push Docker image
+    needs: super-lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and tag Docker image
+        run: |
+          IMAGE_NAME=ghcr.io/shokerisbad/lecturium:latest
+          docker build -f ./lecturiumServices/Dockerfile -t $IMAGE_NAME ./lecturiumServices
+          echo "Built $IMAGE_NAME"
+
+      - name: Push Docker image to GHCR
+        run: |
+          IMAGE_NAME=ghcr.io/shokerisbad/lecturium:latest
+          docker push $IMAGE_NAME
